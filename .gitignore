@@ -19,3 +19,6 @@ data/*.db.wal
 .vscode/
 .idea/
 .DS_Store
+backend-go/data/raw_consulta_cand_2024_BRASIL.csv
+backend-go/data/synthetic_consulta_cand_2024_BRASIL.csv
+backend-go/data/synthetic_consulta_cand_2024_BRASIL.parquet
