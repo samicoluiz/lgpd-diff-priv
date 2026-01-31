@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package privacy;
+
+// Esta linha é obrigatória para o gerador de código Go
+option go_package = "backend-go/pb";
+
+service PrivacyService {
+  rpc ProcessDataset (AnonymizeRequest) returns (AnonymizeResponse) {}
+}
+
+message AnonymizeRequest {
+  string input_path = 1;
+  float epsilon = 2;
+  float delta = 3;
+  bool detect_pii = 4;
+}
+
+message AnonymizeResponse {
+  string output_path = 1;
+  float privacy_score = 2;
+  string status = 3;
+  map<string, string> pii_report = 4;
+}

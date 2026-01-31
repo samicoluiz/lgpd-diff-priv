@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Orquestrador Web e Dashboard (Go + HTMX)
+  backend-go:
+    build:
+      context: ./backend-go
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data  # Volume compartilhado para o Parquet
+    depends_on:
+      - redis
+      - ml-worker
+    environment:
+      - REDIS_ADDR=redis:6379
+      - WORKER_GRPC_ADDR=ml-worker:50051 # Endereço do Python para gRPC
+    networks:
+      - tcc-network
+
+  # Motor de IA e Privacidade (Python 3.10)
+  ml-worker:
+      build:
+        context: ./ml-worker-python
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                count: 1
+                capabilities: [gpu]
+
+  # Fila de Tarefas Assíncronas
+  redis:
+    image: redis:alpine
+    networks:
+      - tcc-network
+
+networks:
+  tcc-network:
+    driver: bridge

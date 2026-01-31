@@ -1,0 +1,41 @@
+{{ if .Error }}
+    <div class="alert alert-danger" role="alert">
+        [ERROR] {{ .Error }}
+    </div>
+{{ else }}
+<div class="bg-slate-800 p-6 rounded-xl border border-indigo-500/50 animate-fade-in">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-indigo-400">Processamento Concluído</h3>
+        <span class="bg-green-600 px-3 py-1 rounded-full text-xs font-bold uppercase">{{ .Response.Status }}</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+            <p class="text-slate-400 text-sm uppercase">Score de Privacidade</p>
+            <p class="text-3xl font-mono text-green-400">{{ printf "%.4f" .Response.PrivacyScore }}</p>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+            <p class="text-slate-400 text-sm uppercase">Orçamento ε</p>
+            <p class="text-3xl font-mono text-indigo-400">1.0</p>
+        </div>
+    </div>
+
+    <div class="mt-6">
+        <p class="text-slate-400 text-sm mb-2 uppercase">Identificadores Detectados:</p>
+        <div class="flex flex-wrap gap-2">
+            {{ range $col, $type := .Response.PiiReport }}
+            <span class="bg-slate-700 border border-slate-600 px-3 py-1 rounded text-sm">
+                <b>{{ $col }}</b>: <span class="text-indigo-300">{{ $type }}</span>
+            </span>
+            {{ end }}
+        </div>
+    </div>
+
+    <div class="mt-8 pt-6 border-t border-slate-700">
+        <a href="/data/{{.Response.OutputPath}}" download 
+   class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold">
+   Download do Dataset Sintético
+</a>
+    </div>
+</div>
+{{ end }}

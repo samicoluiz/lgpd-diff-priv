@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>🛡️ Privacy Engine Dashboard</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos para o indicador do HTMX */
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator {
+            display: block;
+        }
+        .htmx-request.htmx-indicator {
+            display: block;
+        }
+        
+        /* Animação da barra de progresso */
+        @keyframes progress {
+            0% { left: -40%; width: 30%; }
+            50% { width: 30%; }
+            100% { left: 100%; width: 30%; }
+        }
+        .progress-bar-value {
+            animation: progress 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">AI Privacy Engine</h1>
+            <p class="text-slate-400">Geração de Dados Sintéticos com Privacidade Diferencial para LGPD</p>
+        </header>
+
+        <section class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl mb-8">
+            <h2 class="text-xl font-semibold mb-6">Configuração do Pipeline</h2>
+            
+                <form hx-post="/upload" 
+                    hx-target="#result" 
+                    hx-encoding="multipart/form-data"  hx-indicator="#progress-container">
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Dataset (Parquet ou CSV)</label>
+                        <input type="file" name="dataset" required
+                            class="block w-full text-sm text-slate-400 
+                                    file:mr-4 file:py-2.5 file:px-6 
+                                    file:rounded-full file:border-0 
+                                    file:text-sm file:font-bold 
+                                    file:bg-indigo-600 file:text-white 
+                                    hover:file:bg-indigo-500 cursor-pointer">
+                    </div>
+
+                    <button type="submit" 
+                            class="bg-indigo-600 hover:bg-indigo-500 px-8 py-3 rounded-xl font-bold transition-all">
+                        Iniciar Anonimização
+                    </button>
+                </form>
+
+            <div id="progress-container" class="htmx-indicator mt-8">
+                <div class="flex justify-between mb-2">
+                    <span class="text-sm font-medium text-indigo-400 animate-pulse">Processando na GPU (CUDA)...</span>
+                </div>
+                <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden relative">
+                    <div class="bg-indigo-500 h-full absolute progress-bar-value rounded-full shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-3 text-center">O Worker Python está analisando PII e treinando o modelo AIM. Isso pode levar alguns segundos.</p>
+            </div>
+        </section>
+
+        <div id="result"></div>
+    </div>
+</body>
+</html>

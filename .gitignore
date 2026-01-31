@@ -1,0 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Go
+backend-go/main
+backend-go/pb/*.go  # Opcional: alguns preferem versionar o código gerado, outros não.
+bin/
+
+# Dados e Big Data (Não versionar datasets reais por segurança/tamanho)
+data/*.parquet
+data/*.db
+data/*.db.wal
+
+# IDEs e Sistema
+.vscode/
+.idea/
+.DS_Store
