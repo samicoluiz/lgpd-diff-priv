@@ -1,0 +1,2 @@
+Inicialmente, observou-se que técnicas de anonimização tradicionais (Wrangling) proviam proteção excessiva ao custo de uma utilidade estatística severamente reduzida (JSD=0.57). Ao flexibilizar o pré-processamento para uma abordagem minimalista, restaurou-se a fidelidade dos dados, permitindo que o algoritmo de Privacidade Diferencial atuasse como o principal garantidor da proteção contra ataques de reidentificação.
+
