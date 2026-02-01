@@ -93,8 +93,10 @@ type AnonymizeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	OutputPath    string                 `protobuf:"bytes,1,opt,name=output_path,json=outputPath,proto3" json:"output_path,omitempty"`
 	PrivacyScore  float32                `protobuf:"fixed32,2,opt,name=privacy_score,json=privacyScore,proto3" json:"privacy_score,omitempty"`
-	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
-	PiiReport     map[string]string      `protobuf:"bytes,4,rep,name=pii_report,json=piiReport,proto3" json:"pii_report,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	UtilityScore  float32                `protobuf:"fixed32,3,opt,name=utility_score,json=utilityScore,proto3" json:"utility_score,omitempty"`
+	EpsilonUsed   float32                `protobuf:"fixed32,4,opt,name=epsilon_used,json=epsilonUsed,proto3" json:"epsilon_used,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	PiiReport     map[string]string      `protobuf:"bytes,6,rep,name=pii_report,json=piiReport,proto3" json:"pii_report,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -143,6 +145,20 @@ func (x *AnonymizeResponse) GetPrivacyScore() float32 {
 	return 0
 }
 
+func (x *AnonymizeResponse) GetUtilityScore() float32 {
+	if x != nil {
+		return x.UtilityScore
+	}
+	return 0
+}
+
+func (x *AnonymizeResponse) GetEpsilonUsed() float32 {
+	if x != nil {
+		return x.EpsilonUsed
+	}
+	return 0
+}
+
 func (x *AnonymizeResponse) GetStatus() string {
 	if x != nil {
 		return x.Status
@@ -168,14 +184,16 @@ const file_privacy_proto_rawDesc = "" +
 	"\aepsilon\x18\x02 \x01(\x02R\aepsilon\x12\x14\n" +
 	"\x05delta\x18\x03 \x01(\x02R\x05delta\x12\x1d\n" +
 	"\n" +
-	"detect_pii\x18\x04 \x01(\bR\tdetectPii\"\xf9\x01\n" +
+	"detect_pii\x18\x04 \x01(\bR\tdetectPii\"\xc1\x02\n" +
 	"\x11AnonymizeResponse\x12\x1f\n" +
 	"\voutput_path\x18\x01 \x01(\tR\n" +
 	"outputPath\x12#\n" +
-	"\rprivacy_score\x18\x02 \x01(\x02R\fprivacyScore\x12\x16\n" +
-	"\x06status\x18\x03 \x01(\tR\x06status\x12H\n" +
+	"\rprivacy_score\x18\x02 \x01(\x02R\fprivacyScore\x12#\n" +
+	"\rutility_score\x18\x03 \x01(\x02R\futilityScore\x12!\n" +
+	"\fepsilon_used\x18\x04 \x01(\x02R\vepsilonUsed\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12H\n" +
 	"\n" +
-	"pii_report\x18\x04 \x03(\v2).privacy.AnonymizeResponse.PiiReportEntryR\tpiiReport\x1a<\n" +
+	"pii_report\x18\x06 \x03(\v2).privacy.AnonymizeResponse.PiiReportEntryR\tpiiReport\x1a<\n" +
 	"\x0ePiiReportEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012[\n" +

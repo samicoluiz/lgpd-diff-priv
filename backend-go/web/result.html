@@ -1,41 +1,45 @@
 {{ if .Error }}
-    <div class="alert alert-danger" role="alert">
-        [ERROR] {{ .Error }}
+    <div class="bg-red-100 border-l-4 border-red-600 p-4 text-red-700 font-bold uppercase text-xs">
+        [Falha Crítica] {{ .Error }}
     </div>
 {{ else }}
-<div class="bg-slate-800 p-6 rounded-xl border border-indigo-500/50 animate-fade-in">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-bold text-indigo-400">Processamento Concluído</h3>
-        <span class="bg-green-600 px-3 py-1 rounded-full text-xs font-bold uppercase">{{ .Response.Status }}</span>
+<div class="animate-in fade-in duration-500">
+    <div class="data-grid mb-8">
+        <div class="grid-cell">
+            <span class="label text-[10px] font-black uppercase text-gray-400">Status do Sistema</span>
+            <span class="text-xl font-bold uppercase">{{ .Response.Status }}</span>
+        </div>
+        <div class="grid-cell">
+            <span class="label text-[10px] font-black uppercase text-gray-400">Orçamento Aplicado</span>
+            <span class="text-xl font-black swiss-red">ε {{ printf "%.1f" .Response.EpsilonUsed }}</span>
+        </div>
+        <div class="grid-cell">
+            <span class="label text-[10px] font-black uppercase text-gray-400">Privacy Score (1-Risk)</span>
+            <span class="text-4xl font-black italic tracking-tighter">{{ printf "%.4f" .Response.PrivacyScore }}</span>
+        </div>
+        <div class="grid-cell">
+            <span class="label text-[10px] font-black uppercase text-gray-400">Data Utility (JSD)</span>
+            <span class="text-4xl font-black italic tracking-tighter">{{ printf "%.4f" .Response.UtilityScore }}</span>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
-            <p class="text-slate-400 text-sm uppercase">Score de Privacidade</p>
-            <p class="text-3xl font-mono text-green-400">{{ printf "%.4f" .Response.PrivacyScore }}</p>
-        </div>
-        <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
-            <p class="text-slate-400 text-sm uppercase">Orçamento ε</p>
-            <p class="text-3xl font-mono text-indigo-400">1.0</p>
-        </div>
-    </div>
-
-    <div class="mt-6">
-        <p class="text-slate-400 text-sm mb-2 uppercase">Identificadores Detectados:</p>
-        <div class="flex flex-wrap gap-2">
+    <div class="mb-8">
+        <h4 class="text-[10px] font-black uppercase mb-4 border-b border-black">PII Report / LGPD Compliance</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             {{ range $col, $type := .Response.PiiReport }}
-            <span class="bg-slate-700 border border-slate-600 px-3 py-1 rounded text-sm">
-                <b>{{ $col }}</b>: <span class="text-indigo-300">{{ $type }}</span>
-            </span>
+            <div class="flex justify-between border-b border-gray-200 py-2 text-xs">
+                <span class="font-bold uppercase">{{ $col }}</span>
+                <span class="font-mono text-gray-500">{{ $type }}</span>
+            </div>
             {{ end }}
         </div>
     </div>
 
-    <div class="mt-8 pt-6 border-t border-slate-700">
+    <div class="flex justify-end">
         <a href="/data/{{.Response.OutputPath}}" download 
-   class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold">
-   Download do Dataset Sintético
-</a>
+           class="inline-block border-2 border-black px-8 py-4 font-black uppercase tracking-tighter hover:bg-black hover:text-white transition-all">
+            Download Parquet Result
+        </a>
     </div>
 </div>
 {{ end }}

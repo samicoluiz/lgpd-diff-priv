@@ -19,6 +19,8 @@ message AnonymizeRequest {
 message AnonymizeResponse {
   string output_path = 1;
   float privacy_score = 2;
-  string status = 3;
-  map<string, string> pii_report = 4;
+  float utility_score = 3;
+  float epsilon_used = 4;
+  string status = 5;
+  map<string, string> pii_report = 6;
 }

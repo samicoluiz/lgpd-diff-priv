@@ -20,25 +20,30 @@ class PrivacyService(privacy_pb2_grpc.PrivacyServiceServicer):
         self.engine = PrivacyEngine()
 
     def ProcessDataset(self, request, context):
-            print(f"\n--- ⚙️ Iniciando Processamento gRPC ---")
-        
+        print(f"\n--- Iniciando Processamento gRPC ---")
         print(f"[FILE] Dataset: {request.input_path}")
+        print(f"[EPSILON] Recebido do Go: {request.epsilon}")
         
-        output, risk = pipeline.run(request.input_path)
+        # Recebendo os 4 valores do engine
+        output, risk, pii_detected, utility = self.engine.run_pipeline(
+            request.input_path, 
+            epsilon=request.epsilon
+        )
 
-        # [NOTE] ADICIONE ESTAS LINHAS AQUI:
-        print(f"[DONE] Fim do Pipeline!")
-        print(f"[SCORE] Risco Calculado (Anonymeter): {risk:.4f}")
+        filename_only = os.path.basename(output)
+        score = float(1.0 - risk)
 
-        print(f"[SAVE] Caminho de Saída: {output}")
-            print(f"---------------------------------------\n")
+        print(f"[DONE] Pipeline Finalizado!")
+        print(f"[METRICS] Privacidade: {score:.4f} | Utilidade (JSD): {utility:.4f}")
             
-            return privacy_pb2.AnonymizeResponse(
-                output_path=filename_only, # Envia apenas o nome do arquivo
-                privacy_score=score,
-                status="Sucesso",
-                pii_report={col: "IDENTIFIED_AND_MASKED" for col in pii_detected}
-            )
+        return privacy_pb2.AnonymizeResponse(
+            output_path=filename_only,
+            privacy_score=score,
+            utility_score=utility, # Enviando a métrica para o Dashboard
+            epsilon_used=request.epsilon,
+            status="Sucesso",
+            pii_report={col: "MASKED" for col in pii_detected}
+        )
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))

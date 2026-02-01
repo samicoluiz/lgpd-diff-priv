@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rprivacy.proto\x12\x07privacy\"Z\n\x10\x41nonymizeRequest\x12\x12\n\ninput_path\x18\x01 \x01(\t\x12\x0f\n\x07\x65psilon\x18\x02 \x01(\x02\x12\r\n\x05\x64\x65lta\x18\x03 \x01(\x02\x12\x12\n\ndetect_pii\x18\x04 \x01(\x08\"\xc0\x01\n\x11\x41nonymizeResponse\x12\x13\n\x0boutput_path\x18\x01 \x01(\t\x12\x15\n\rprivacy_score\x18\x02 \x01(\x02\x12\x0e\n\x06status\x18\x03 \x01(\t\x12=\n\npii_report\x18\x04 \x03(\x0b\x32).privacy.AnonymizeResponse.PiiReportEntry\x1a\x30\n\x0ePiiReportEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x32[\n\x0ePrivacyService\x12I\n\x0eProcessDataset\x12\x19.privacy.AnonymizeRequest\x1a\x1a.privacy.AnonymizeResponse\"\x00\x42\x0fZ\rbackend-go/pbb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rprivacy.proto\x12\x07privacy\"Z\n\x10\x41nonymizeRequest\x12\x12\n\ninput_path\x18\x01 \x01(\t\x12\x0f\n\x07\x65psilon\x18\x02 \x01(\x02\x12\r\n\x05\x64\x65lta\x18\x03 \x01(\x02\x12\x12\n\ndetect_pii\x18\x04 \x01(\x08\"\xed\x01\n\x11\x41nonymizeResponse\x12\x13\n\x0boutput_path\x18\x01 \x01(\t\x12\x15\n\rprivacy_score\x18\x02 \x01(\x02\x12\x15\n\rutility_score\x18\x03 \x01(\x02\x12\x14\n\x0c\x65psilon_used\x18\x04 \x01(\x02\x12\x0e\n\x06status\x18\x05 \x01(\t\x12=\n\npii_report\x18\x06 \x03(\x0b\x32).privacy.AnonymizeResponse.PiiReportEntry\x1a\x30\n\x0ePiiReportEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x32[\n\x0ePrivacyService\x12I\n\x0eProcessDataset\x12\x19.privacy.AnonymizeRequest\x1a\x1a.privacy.AnonymizeResponse\"\x00\x42\x0fZ\rbackend-go/pbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -37,9 +37,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ANONYMIZEREQUEST']._serialized_start=26
   _globals['_ANONYMIZEREQUEST']._serialized_end=116
   _globals['_ANONYMIZERESPONSE']._serialized_start=119
-  _globals['_ANONYMIZERESPONSE']._serialized_end=311
-  _globals['_ANONYMIZERESPONSE_PIIREPORTENTRY']._serialized_start=263
-  _globals['_ANONYMIZERESPONSE_PIIREPORTENTRY']._serialized_end=311
-  _globals['_PRIVACYSERVICE']._serialized_start=313
-  _globals['_PRIVACYSERVICE']._serialized_end=404
+  _globals['_ANONYMIZERESPONSE']._serialized_end=356
+  _globals['_ANONYMIZERESPONSE_PIIREPORTENTRY']._serialized_start=308
+  _globals['_ANONYMIZERESPONSE_PIIREPORTENTRY']._serialized_end=356
+  _globals['_PRIVACYSERVICE']._serialized_start=358
+  _globals['_PRIVACYSERVICE']._serialized_end=449
 # @@protoc_insertion_point(module_scope)

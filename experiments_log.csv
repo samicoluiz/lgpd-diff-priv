@@ -1,0 +1,2 @@
+timestamp,epsilon,score_total,score_wrangling,dp_gain,util_marginal,util_joint,train_sec,gen_sec,rows
+2026-02-01 11:52:56,100.0,0.9962,0.9942,0.0020,0.5723,0.3612,0.69,27.61,100000

@@ -1,0 +1,53 @@
+graph TD
+    %% Estilos
+    classDef storage fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef process fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef audit fill:#bfb,stroke:#333,stroke-width:2px;
+    classDef raw fill:#eee,stroke:#333,stroke-dasharray: 5 5;
+
+    %% Ingestão
+    A[Dataset TSE Bruto .csv] --> B(Amostragem 100k e Limpeza)
+    B --> C{TSEDataWrangler}
+
+    %% Processamento
+    subgraph "Camada de Preparação"
+        C --> D[Redução de Cardinalidade]
+        D --> E[Binning de Idade]
+        E --> F[Remoção PII - Presidio]
+    end
+
+    %% Estados do Dado
+    F --> G[(Dado Limpo / Wrangled)]
+    class G storage;
+
+    G --> H[Algoritmo AIM - DP]
+    H --> I[(Dado Sintético .parquet)]
+    class I storage;
+
+    %% Auditoria e Avaliação
+    subgraph "Auditoria de Três Vias"
+        G --> J[Anonymeter: Risco Mecânico]
+        I --> K[Anonymeter: Risco DP]
+        G --> L[Utilidade JSD]
+        I --> L
+        
+        subgraph "ML Evaluator - Protocolo TSTR"
+            G --> M[Random Forest: Baseline]
+            I --> N[Random Forest: Sintético]
+            M --> O[Cálculo Utility Gap]
+            N --> O
+        end
+    end
+
+    %% Outputs
+    J --> P[Cálculo dp_gain]
+    K --> P
+    P --> Q[Log de Experimentos .csv]
+    L --> Q
+    O --> Q
+    H --> R[Model Persistence .joblib]
+
+    class A raw;
+    class B,C,D,E,F,H process;
+    class J,K,L,M,N,O,P audit;
+    class Q,R storage;
