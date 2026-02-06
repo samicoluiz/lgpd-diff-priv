@@ -1,0 +1,70 @@
+Início: Fri Feb  6 12:29:06 -03 2026
+✅ Preparado com alta fidelidade: 19269 registros para síntese.
+[2026-02-06T12:29:11.594613-0300][3003][CRITICAL] Error importing TabularGoggle: No module named 'dgl'
+[2026-02-06T12:29:11.596617-0300][3003][CRITICAL] module disabled: /home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py
+[2026-02-06T12:29:38.506775-0300][3003][CRITICAL] module disabled: /home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py
+[2026-02-06T12:30:26.341770-0300][3003][CRITICAL] module disabled: /home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py
+🧬 Iniciando Experimento de Trade-off (Privacidade vs. Utilidade)
+============================================================
+📊 Base de treino carregada: 19269 registos.
+
+🚀 A processar Epsilon 10.0...
+✅ Concluído: df_syn_eps_10.0.parquet gerado em 0.46 minutos.
+
+🚀 A processar Epsilon 1.0...
+✅ Concluído: df_syn_eps_1.0.parquet gerado em 0.80 minutos.
+
+🚀 A processar Epsilon 0.1...
+✅ Concluído: df_syn_eps_0.1.parquet gerado em 0.87 minutos.
+
+============================================================
+✨ Processo concluído. Todos os cenários estão prontos para avaliação.
+👉 Próximo passo sugerido: python3 03_utility_evaluator.py
+
+========================================
+      Cenário       F1      ACC
+    Original 0.627309 0.631382
+Epsilon 10.0 0.398794 0.469282
+ Epsilon 1.0 0.393909 0.468659
+ Epsilon 0.1 0.403005 0.474678 
+========================================
+
+🚀 Analisando Epsilon 10.0...
+🕵️ Auditoria: Amostra de 1500 registros | 500 ataques.
+   - Atacando Singling Out... ✅
+   - Atacando Linkability... ✅
+   - Atacando Inference... ✅
+
+📊 PRIVACIDADE - EPSILON 10.0
+-------------------------------------------------------
+🔹 Singling Out    | Risco: 0.1169 | IC: (0.0890, 0.1448)
+🔹 Linkability     | Risco: 0.0038 | IC: (0.0000, 0.0076)
+🔹 Inference       | Risco: 0.1467 | IC: (0.1159, 0.1775)
+-------------------------------------------------------
+
+🚀 Analisando Epsilon 1.0...
+🕵️ Auditoria: Amostra de 1500 registros | 500 ataques.
+   - Atacando Singling Out... ✅
+   - Atacando Linkability... ✅
+   - Atacando Inference... ✅
+
+📊 PRIVACIDADE - EPSILON 1.0
+-------------------------------------------------------
+🔹 Singling Out    | Risco: 0.1289 | IC: (0.0997, 0.1580)
+🔹 Linkability     | Risco: 0.0038 | IC: (0.0000, 0.0076)
+🔹 Inference       | Risco: 0.1666 | IC: (0.1341, 0.1990)
+-------------------------------------------------------
+
+🚀 Analisando Epsilon 0.1...
+🕵️ Auditoria: Amostra de 1500 registros | 500 ataques.
+   - Atacando Singling Out... ✅
+   - Atacando Linkability... ✅
+   - Atacando Inference... ✅
+
+📊 PRIVACIDADE - EPSILON 0.1
+-------------------------------------------------------
+🔹 Singling Out    | Risco: 0.1209 | IC: (0.0926, 0.1492)
+🔹 Linkability     | Risco: 0.0038 | IC: (0.0000, 0.0076)
+🔹 Inference       | Risco: 0.1646 | IC: (0.1323, 0.1969)
+-------------------------------------------------------
+Fim: Fri Feb  6 12:31:39 -03 2026

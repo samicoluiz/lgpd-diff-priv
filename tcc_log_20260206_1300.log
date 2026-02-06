@@ -1,0 +1,18 @@
+🚀 Preparando base para análise de Trade-off...
+✅ Base pronta! Colunas: ['CD_CARGO', 'PARTIDO', 'COMPETICAO_BIN', 'TEM_TITULO', 'ALVO']
+
+🧬 SÍNTESE DIFERENCIALMENTE PRIVADA (AIM)
+🚀 Processando Epsilon 10.0...
+✅ Concluído em 13.94 min.
+🚀 Processando Epsilon 1.0...
+✅ Concluído em 4.09 min.
+🚀 Processando Epsilon 0.1...
+✅ Concluído em 3.94 min.
+
+========================================
+      Cenário       F1    ACC
+    Original 0.619723 0.6272
+Epsilon 10.0 0.519308 0.5190
+ Epsilon 1.0 0.499928 0.5040
+ Epsilon 0.1 0.501393 0.5030 
+========================================

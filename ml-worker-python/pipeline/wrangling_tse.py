@@ -2,58 +2,101 @@ import pandas as pd
 import numpy as np
 
 class TSEDataWrangler:
-    def __init__(self):
-        # Removi a duplicata de SG_PARTIDO e mantive a ordem lógica
-        self.final_cols = [
+    def __init__(self, strategy="intensive"):
+        self.strategy = strategy
+        
+        # 1. BLACKLIST: Identificadores que impossibilitam a anonimização diferencial
+        # Se esses campos entrarem no modelo, o risco de re-identificação é 100%
+        self.blacklist = [
+            'NR_CPF_CANDIDATO', 'NM_CANDIDATO', 'NM_SOCIAL_CANDIDATO', 
+            'NR_TITULO_ELEITORAL_CANDIDATO', 'SQ_CANDIDATO', 'NM_EMAIL',
+            'NR_PROCESSO', 'NR_CANDIDATO', 'NM_URNA_CANDIDATO'
+        ]
+
+        # 2. COLUNAS DE INTERESSE: O que realmente importa para a análise
+        self.base_cols = [
             'SG_UF', 'NM_UE', 'CD_CARGO', 'NR_PARTIDO', 'SG_PARTIDO', 
             'CD_GENERO', 'CD_GRAU_INSTRUCAO', 'CD_ESTADO_CIVIL', 
-            'CD_COR_RACA', 'CD_OCUPACAO', 'ANO_NASCIMENTO', 
+            'CD_COR_RACA', 'CD_OCUPACAO', 'FAIXA_ETARIA', 
             'DS_SITUACAO_CANDIDATURA', 'DS_SIT_TOT_TURNO'
         ]
-        
-        # Centralizei os limites aqui para facilitar o seu ajuste de TCC
-        # Aumentamos NM_UE e SG_PARTIDO para forçar a dimensionalidade
-        self.limits = {
-            'NM_UE': 100,            # Top 100 cidades (Aumenta o risco/unicidade)
-            'SG_PARTIDO': 35,       # Todos os partidos (Aumenta o risco/unicidade)
-            'CD_OCUPACAO': 15,       # Mais profissões para o AIM aprender
-            'NR_PARTIDO': 15,
-            'SG_UF': 27,            # Todos os estados
-            'ANO_NASCIMENTO': 4      # Mantemos 4 categorias de bining
-        }
-        self.default_limit = 6 
+
+        # 3. LIMITES DE CARDINALIDADE (Top-N): 
+        # Quanto menor o número, maior a privacidade (e menor o risco na GUI)
+        if strategy == "high_fidelity":
+            self.limits = {
+                'NM_UE': 3000,          # Exposição proposital para testes
+                'CD_OCUPACAO': 245,     
+                'SG_PARTIDO': 45,       
+                'ANO_NASCIMENTO': 80
+            }
+            self.default_limit = 100
+        elif strategy == "minimal":
+            self.limits = {
+                'NM_UE': 500,
+                'CD_OCUPACAO': 100,
+                'FAIXA_ETARIA': 15
+            }
+            self.default_limit = 40
+        else: # INTENSIVE (O modo "Cofre" para o TCC)
+            self.limits = {
+                'NM_UE': 50,            # Mantém apenas as 50 maiores cidades (capitais/polos)
+                'CD_OCUPACAO': 10,      # Agrupa centenas de profissões em 10 grupos principais
+                'SG_PARTIDO': 30,       
+                'NR_PARTIDO': 30,
+                'FAIXA_ETARIA': 6       # Apenas 6 grandes grupos geracionais
+            }
+            self.default_limit = 10 
 
     def process(self, df):
-        # 1. Binning de Idade (Transformação de dado contínuo em categórico)
+        # Cópia para evitar SettingWithCopyWarning
+        df = df.copy()
+
+        # --- A. REMOÇÃO DE PII DIRETA ---
+        df = df.drop(columns=[c for c in self.blacklist if c in df.columns])
+
+        # --- B. GENERALIZAÇÃO TEMPORAL (IDADE) ---
         if 'DT_NASCIMENTO' in df.columns:
+            # Converte para data e extrai o ano
             years = pd.to_datetime(df['DT_NASCIMENTO'], errors='coerce').dt.year
             years = years.fillna(years.median())
 
-            bins = [0, 1970, 1985, 2000, 2026]
-            labels = ['VETERANO', 'EXPERIENTE', 'JOVEM_ADULTO', 'NOVA_GERACAO']
-            df['ANO_NASCIMENTO'] = pd.cut(years, bins=bins, labels=labels).astype(str)
+            if self.strategy == "high_fidelity":
+                # Mantém o ano exato (Alto risco de inferência)
+                df['FAIXA_ETARIA'] = years.astype(int).astype(str)
+            else:
+                # Intensive: Binning geracional (Derruba o Inference Attack)
+                bins = [0, 1960, 1975, 1985, 1995, 2005, 2026]
+                labels = ['BOOMER', 'GEN_X', 'MILLENNIAL_FALDA', 'MILLENNIAL_NOVO', 'GEN_Z', 'NEW_GEN']
+                df['FAIXA_ETARIA'] = pd.cut(years, bins=bins, labels=labels).astype(str)
         else:
-            df['ANO_NASCIMENTO'] = "NAO_INFORMADO"
+            df['FAIXA_ETARIA'] = "NAO_INFORMADO"
 
-        # 2. Seleção de Colunas
-        available_cols = [c for c in self.final_cols if c in df.columns]
-        df_reduced = df[available_cols].copy()
+        # --- C. SELEÇÃO E LIMPEZA DE COLUNAS ---
+        available_cols = [c for c in self.base_cols if c in df.columns]
+        df = df[available_cols].copy()
 
-        # 3. Redução de Cardinalidade (Top-N + OUTROS)
-        for col in df_reduced.columns:
-            df_reduced[col] = df_reduced[col].astype(str).str.strip().str.upper()
+        # --- D. REDUÇÃO DE CARDINALIDADE (O "GROSSO" DA ANONIMIZAÇÃO) ---
+        for col in df.columns:
+            # Padronização para evitar duplicidade (ex: "MÉDICO" vs "medico")
+            df[col] = df[col].astype(str).str.strip().str.upper().replace('NAN', 'NULL')
             
-            # AGORA USA OS LIMITES DO __INIT__
+            # Pula redução se for modo fidelidade total para certas colunas
+            if self.strategy == "high_fidelity" and col in ['NM_UE', 'CD_OCUPACAO']:
+                continue
+
             limit = self.limits.get(col, self.default_limit)
             
-            if df_reduced[col].nunique() > limit:
-                top_items = df_reduced[col].value_counts().nlargest(limit).index
-                df_reduced[col] = df_reduced[col].apply(
-                    lambda x: x if x in top_items else "OUTROS"
-                )
-        
-        return df_reduced
+            # Se a coluna tiver mais categorias que o permitido, agrupamos o "resto"
+            if df[col].nunique() > limit:
+                top_items = df[col].value_counts().nlargest(limit).index
+                df[col] = df[col].apply(lambda x: x if x in top_items else "OUTROS_GRUPOS")
 
-def apply_wrangling(df):
-    wrangler = TSEDataWrangler()
+        return df
+
+def apply_wrangling(df, strategy="intensive"):
+    """
+    Função de conveniência para o engine.py
+    """
+    wrangler = TSEDataWrangler(strategy=strategy)
     return wrangler.process(df)

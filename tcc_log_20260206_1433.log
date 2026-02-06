@@ -1,0 +1,25 @@
+🚀 Preparando base para análise de Trade-off...
+✅ Base pronta! Colunas: ['CD_CARGO', 'PARTIDO', 'COMPETICAO_BIN', 'TEM_TITULO', 'ALVO']
+
+============================================================
+🧬 SÍNTESE RESILIENTE COM SINALIZADOR DE VIDA
+============================================================
+📊 Base carregada: 20000 registros.
+⏩ Epsilon 10.0 já existe. Saltando...
+⏩ Epsilon 1.0 já existe. Saltando...
+⏩ Epsilon 0.1 já existe. Saltando...
+
+============================================================
+✨ SÍNTESE FINALIZADA!
+
+========================================
+      Cenário       F1    ACC
+    Original 0.619723 0.6272
+Epsilon 10.0 0.519308 0.5190
+ Epsilon 1.0 0.499928 0.5040
+ Epsilon 0.1 0.501393 0.5030 
+========================================
+
+🚀 Analisando Epsilon 10.0...
+🕵️ Auditoria Turbo: 800 registros | 150 ataques.
+   - Atacando Singling Out... 

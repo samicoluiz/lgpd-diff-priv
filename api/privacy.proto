@@ -17,10 +17,14 @@ message AnonymizeRequest {
 }
 
 message AnonymizeResponse {
-  string output_path = 1;
-  float privacy_score = 2;
-  float utility_score = 3;
-  float epsilon_used = 4;
-  string status = 5;
-  map<string, string> pii_report = 6;
+    string output_path = 1;
+    float privacy_score = 2;   // Este será o 1 - max(riscos)
+    float utility_score = 3;
+    float epsilon_used = 4;
+    string status = 5;         // Aqui enviaremos a tabela formatada
+    map<string, string> pii_report = 6;    
+    // Novos campos para a GUI tabular
+    float singling_out_risk = 7;
+    float linkability_risk = 8;
+    float inference_risk = 9;
 }

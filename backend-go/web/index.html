@@ -3,172 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSE Privacy Audit Dashboard</title>
+    <title>Privacy Engine | Audit Tool</title>
     
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- FUNDAMENTOS DO DESIGN SUÍÇO --- */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F5F5F5;
-            color: #1A1A1A;
-            -webkit-font-smoothing: antialiased;
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: #F5F5F5; color: #1A1A1A; }
         .swiss-red { color: #E62B1E; }
         .bg-swiss-red { background-color: #E62B1E; }
-        
-        /* --- SISTEMA DE GRADE (GRID) --- */
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            border-left: 1px solid #D1D1D1;
-            border-top: 1px solid #D1D1D1;
-        }
 
-        .grid-cell {
-            padding: 20px;
-            border-right: 1px solid #D1D1D1;
-            border-bottom: 1px solid #D1D1D1;
-            background: white;
-        }
-
-        .label-swiss {
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #666;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        /* --- CONTROLES DE FORMULÁRIO --- */
+        /* --- REMOVER SPINNERS PADRÃO --- */
         input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] { -moz-appearance: textfield; }
+        input::-webkit-inner-spin-button { -webkit-appearance: none !important; margin: 0; }
+        input[type=number] { -moz-appearance: textfield !important; }
 
+        /* --- ESTILIZAÇÃO DO SLIDER (RANGE) --- */
         .swiss-slider {
             -webkit-appearance: none;
+            width: 100%;
             height: 2px;
             background: #D1D1D1;
             outline: none;
+            margin-top: 1.5rem;
         }
-
         .swiss-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 12px;
-            height: 24px;
+            width: 14px;
+            height: 28px;
             background: #1A1A1A;
             cursor: pointer;
+            border-radius: 0;
             transition: background 0.2s;
         }
+        .swiss-slider::-webkit-slider-thumb:hover { background: #E62B1E; }
 
-        .swiss-slider::-webkit-slider-thumb:hover {
-            background: #E62B1E;
-        }
+        /* --- HTMX FLOW CONTROL --- */
+        #progress-container { display: none; }
+        .htmx-request #progress-container { display: block !important; }
+        .htmx-request #result-content { display: none !important; }
 
-        /* --- HTMX & PROGRESSO --- */
-        .htmx-indicator { display: none; }
-        .htmx-request .htmx-indicator { display: block; }
-
-        @keyframes progress {
-            0% { left: -40%; width: 30%; }
-            100% { left: 100%; width: 30%; }
-        }
-        
-        .progress-line {
-            height: 2px;
-            background: #D1D1D1;
-            position: relative;
-            overflow: hidden;
-        }
-        
+        /* --- ANIMAÇÃO DE PROGRESSO --- */
+        @keyframes progress { 0% { left: -40%; width: 30%; } 100% { left: 100%; width: 30%; } }
+        .progress-line { height: 3px; background: #D1D1D1; position: relative; overflow: hidden; }
         .progress-line::after {
-            content: '';
-            position: absolute;
-            background: #E62B1E;
-            top: 0; bottom: 0;
-            width: 30%;
-            animation: progress 1.5s infinite linear;
+            content: ''; position: absolute; background: #E62B1E;
+            top: 0; bottom: 0; width: 30%; animation: progress 1.5s infinite linear;
         }
     </style>
 </head>
 
 <body class="p-6 md:p-12">
     <div class="max-w-5xl mx-auto">
-        
-        <header class="border-b-4 border-black pb-8 mb-12">
-            <h1 class="text-6xl font-black tracking-tighter uppercase leading-none">Privacy Engine</h1>
-            <div class="flex justify-between items-baseline mt-4">
-                <p class="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Differential Privacy Audit Tool</p>
-                <p class="text-[10px] font-mono font-bold">ST-CODE: 2026 / AIM-CORE</p>
+        <header class="border-b-4 border-black pb-8 mb-12 flex justify-between items-end">
+            <div>
+                <h1 class="text-6xl font-black tracking-tighter uppercase leading-none">Privacy Engine</h1>
+                <p class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mt-4">Audit Tool / 2026 / AIM-CORE</p>
+            </div>
+            <div class="text-right font-mono text-[10px] font-bold text-gray-400 uppercase">
+                Status: System_Ready<br>Mode: Differential_Privacy
             </div>
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-16">
-            
             <section class="lg:col-span-1">
-                <h2 class="text-xs font-black uppercase mb-8 tracking-widest border-b border-gray-300 pb-2">Configurações</h2>
+                <h2 class="text-xs font-black uppercase mb-8 tracking-widest border-b border-gray-300 pb-2">Parâmetros</h2>
                 
-                <form hx-post="/upload" hx-target="#result" hx-encoding="multipart/form-data" hx-indicator="#progress-container">
+                <form hx-post="/upload" 
+                      hx-target="#result" 
+                      hx-encoding="multipart/form-data" 
+                      hx-indicator="body"
+                      class="space-y-10">
                     
-                    <div class="mb-12">
-                        <label class="label-swiss">Orçamento de Privacidade (ε)</label>
-                        
-                        <div class="flex items-stretch border-2 border-black mb-4 bg-white">
-                            <button type="button" onclick="adjustEpsilon(-0.1)" 
-                                class="w-14 text-xl font-bold hover:bg-black hover:text-white transition-colors">-</button>
-                            
-                            <input type="number" id="epsilon_num" name="epsilon" step="0.1" value="1.0" min="0.1" max="100.0"
-                                class="w-full text-center text-3xl font-black py-4 outline-none">
-                            
-                            <button type="button" onclick="adjustEpsilon(0.1)" 
-                                class="w-14 text-xl font-bold hover:bg-black hover:text-white transition-colors">+</button>
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-gray-400 block mb-3">Orçamento de Privacidade (ε)</label>
+                        <div class="flex items-stretch border-2 border-black bg-white">
+                            <button type="button" onclick="adjustEpsilon(-0.1)" class="w-14 text-xl font-bold hover:bg-black hover:text-white transition-all">-</button>
+                            <input type="number" id="epsilon_num" name="epsilon" step="0.1" value="1.0" min="0.1" max="100.0" 
+                                   class="w-full text-center text-3xl font-black py-4 outline-none">
+                            <button type="button" onclick="adjustEpsilon(0.1)" class="w-14 text-xl font-bold hover:bg-black hover:text-white transition-all">+</button>
                         </div>
-
-                        <input type="range" id="epsilon_range" min="0.1" max="10.0" step="0.1" value="1.0"
-                            class="swiss-slider w-full mt-2">
                         
-                        <div class="flex justify-between text-[9px] font-black uppercase mt-3 text-gray-400 tracking-tighter">
-                            <span>Forte Proteção</span>
-                            <span>Forte Utilidade</span>
+                        <input type="range" id="epsilon_range" min="0.1" max="10.0" step="0.1" value="1.0" 
+                               class="swiss-slider">
+                        
+                        <div class="flex justify-between text-[8px] font-black uppercase mt-3 text-gray-400 tracking-tighter">
+                            <span>Máxima Proteção</span>
+                            <span>Máxima Utilidade</span>
                         </div>
                     </div>
 
-                    <div class="mb-12">
-                        <label class="label-swiss">Fonte de Dados (CSV/Parquet)</label>
-                        <input type="file" name="dataset" required
-                            class="block w-full text-[10px] text-gray-400 font-bold uppercase
-                            file:mr-4 file:py-3 file:px-6 file:border-0 
-                            file:bg-black file:text-white file:font-black 
-                            file:uppercase file:text-[10px] hover:file:bg-gray-800 transition-all cursor-pointer">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-gray-400 block mb-3">Dataset (.csv / .parquet)</label>
+                        <input type="file" name="dataset" required 
+                               class="block w-full text-[10px] font-bold uppercase file:mr-4 file:py-3 file:px-6 file:border-0 file:bg-black file:text-white file:font-black cursor-pointer">
                     </div>
 
-                    <button type="submit" class="w-full bg-swiss-red text-white p-5 font-black uppercase tracking-widest hover:bg-black transition-all text-xs">
-                        Iniciar Protocolo AIM
+                    <button type="submit" class="w-full bg-swiss-red text-white p-5 font-black uppercase tracking-widest hover:bg-black transition-all text-xs shadow-[6px_6px_0px_0px_rgba(156,163,175,1)]">
+                        Executar Protocolo AIM
                     </button>
                 </form>
 
-                <div id="progress-container" class="htmx-indicator mt-10">
-                    <p class="text-[9px] font-black uppercase mb-3 text-gray-500 tracking-widest">GPU Active / Computing Synthetic Tensors</p>
+                <div id="progress-container" class="mt-10 border-2 border-black p-6 bg-white shadow-[6px_6px_0px_0px_rgba(156,163,175,1)]">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-2 h-2 bg-red-600 animate-ping"></div>
+                        <p class="text-[10px] font-black uppercase text-black">Auditando no Worker Python...</p>
+                    </div>
                     <div class="progress-line"></div>
+                    <p class="mt-3 text-[9px] font-mono text-gray-400 uppercase">GPU-Accelerated / gRPC Sync</p>
                 </div>
             </section>
 
             <section class="lg:col-span-2">
-                <h2 class="text-xs font-black uppercase mb-8 tracking-widest border-b border-gray-300 pb-2">Relatório de Auditoria</h2>
-                
+                <h2 class="text-xs font-black uppercase mb-8 tracking-widest border-b border-gray-300 pb-2">Painel de Auditoria</h2>
                 <div id="result">
-                    <div class="border-2 border-dashed border-gray-200 h-80 flex flex-col items-center justify-center space-y-4">
-                        <div class="w-8 h-8 border-2 border-gray-200 rotate-45"></div>
-                        <p class="text-gray-300 uppercase text-[10px] font-black tracking-[0.3em]">Aguardando Ingestão</p>
+                    <div id="result-content" class="border-2 border-dashed border-gray-200 h-80 flex items-center justify-center">
+                        <p class="text-gray-300 uppercase text-[10px] font-black tracking-[0.3em]">Aguardando Dados</p>
                     </div>
                 </div>
             </section>
@@ -187,20 +138,14 @@
         // Sincronização Input -> Slider
         num.addEventListener('input', (e) => { 
             const val = parseFloat(e.target.value);
-            // O slider visual foca no range de 0.1 a 10.0 (escala comum)
             range.value = val > 10 ? 10 : val;
         });
 
-        // Função dos botões de incremento
         function adjustEpsilon(amount) {
-            let current = parseFloat(num.value) || 1.0;
-            let newValue = Math.max(0.1, Math.min(100, current + amount)).toFixed(1);
-            
-            num.value = newValue;
-            range.value = newValue > 10 ? 10 : newValue;
-            
-            // Dispara evento para garantir que o HTMX capture a mudança se necessário
-            num.dispatchEvent(new Event('change'));
+            let val = parseFloat(num.value) || 1.0;
+            let final = Math.max(0.1, Math.min(100, val + amount)).toFixed(1);
+            num.value = final;
+            range.value = final > 10 ? 10 : final;
         }
     </script>
 </body>

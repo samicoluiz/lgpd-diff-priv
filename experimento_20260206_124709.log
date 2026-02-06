@@ -1,0 +1,31 @@
+Início: Fri Feb  6 12:47:09 -03 2026
+✅ Nova base com 32000 registros e sinal focado.
+--- Logging error in Loguru Handler #2 ---
+Record was: {'elapsed': datetime.timedelta(seconds=4, microseconds=472521), 'exception': None, 'extra': {}, 'file': (name='logger.py', path='/home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/logger.py'), 'function': 'log_and_print', 'level': (name='CRITICAL', no=50, icon='☠️'), 'line': 65, 'message': "Error importing TabularGoggle: No module named 'dgl'", 'module': 'logger', 'name': 'synthcity.logger', 'process': (id=3777, name='MainProcess'), 'thread': (id=125998795051584, name='MainThread'), 'time': datetime(2026, 2, 6, 12, 47, 14, 879000, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=75600), '-03'))}
+Traceback (most recent call last):
+  File "/home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py", line 33, in <module>
+    from synthcity.plugins.core.models.tabular_goggle import TabularGoggle
+  File "/home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/core/models/tabular_goggle.py", line 15, in <module>
+    from .goggle import Goggle, GoggleLoss
+  File "/home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/core/models/goggle.py", line 7, in <module>
+    import dgl
+ModuleNotFoundError: No module named 'dgl'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/samico/tcc_linux/venv/lib/python3.10/site-packages/loguru/_handler.py", line 206, in emit
+    self._sink.write(str_record)
+  File "/home/samico/tcc_linux/venv/lib/python3.10/site-packages/loguru/_simple_sinks.py", line 16, in write
+    self._stream.write(message)
+ValueError: I/O operation on closed file.
+--- End of logging error ---
+--- Logging error in Loguru Handler #2 ---
+Record was: {'elapsed': datetime.timedelta(seconds=4, microseconds=477719), 'exception': None, 'extra': {}, 'file': (name='logger.py', path='/home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/logger.py'), 'function': 'log_and_print', 'level': (name='CRITICAL', no=50, icon='☠️'), 'line': 65, 'message': 'module disabled: /home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py', 'module': 'logger', 'name': 'synthcity.logger', 'process': (id=3777, name='MainProcess'), 'thread': (id=125998795051584, name='MainThread'), 'time': datetime(2026, 2, 6, 12, 47, 14, 884198, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=75600), '-03'))}
+Traceback (most recent call last):
+  File "/home/samico/tcc_linux/venv/lib/python3.10/site-packages/loguru/_handler.py", line 206, in emit
+    self._sink.write(str_record)
+  File "/home/samico/tcc_linux/venv/lib/python3.10/site-packages/loguru/_simple_sinks.py", line 16, in write
+    self._stream.write(message)
+ValueError: I/O operation on closed file.
+--- End of logging error ---

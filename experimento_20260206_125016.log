@@ -1,0 +1,5 @@
+Início: Fri Feb  6 12:50:16 -03 2026
+🚀 Restaurando Sinal de Alta Fidelidade...
+✅ Setup de Trade-off pronto! Colunas: ['CD_CARGO', 'PARTIDO', 'COMPETICAO_BIN', 'TEM_TITULO', 'ALVO']
+[2026-02-06T12:50:24.004106-0300][4099][CRITICAL] Error importing TabularGoggle: No module named 'dgl'
+[2026-02-06T12:50:24.006070-0300][4099][CRITICAL] module disabled: /home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py

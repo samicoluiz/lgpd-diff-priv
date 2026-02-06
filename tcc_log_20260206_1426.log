@@ -1,0 +1,54 @@
+🚀 Preparando base para análise de Trade-off...
+✅ Base pronta! Colunas: ['CD_CARGO', 'PARTIDO', 'COMPETICAO_BIN', 'TEM_TITULO', 'ALVO']
+
+============================================================
+🧬 SÍNTESE RESILIENTE COM SINALIZADOR DE VIDA
+============================================================
+📊 Base carregada: 20000 registros.
+⏩ Epsilon 10.0 já existe. Saltando...
+⏩ Epsilon 1.0 já existe. Saltando...
+⏩ Epsilon 0.1 já existe. Saltando...
+
+============================================================
+✨ SÍNTESE FINALIZADA!
+
+========================================
+      Cenário       F1    ACC
+    Original 0.619723 0.6272
+Epsilon 10.0 0.519308 0.5190
+ Epsilon 1.0 0.499928 0.5040
+ Epsilon 0.1 0.501393 0.5030 
+========================================
+
+🚀 Analisando Epsilon 10.0...
+🕵️ Auditoria Turbo: 400 registros | 100 ataques.
+   - Atacando Singling Out... ✅ (5.7s)
+   - Atacando Linkability... ✅ (2.9s)
+   - Atacando Inference... ✅ (0.4s)
+
+📊 RESULTADOS EPSILON 10.0
+🔹 Singling Out    | Risco: 0.3170 | IC: (0.2278, 0.4063)
+🔹 Linkability     | Risco: 0.0378 | IC: (0.0055, 0.0700)
+🔹 Inference       | Risco: 0.5674 | IC: (0.4722, 0.6627)
+
+🚀 Analisando Epsilon 1.0...
+🕵️ Auditoria Turbo: 400 registros | 100 ataques.
+   - Atacando Singling Out... ✅ (12.5s)
+   - Atacando Linkability... ✅ (0.0s)
+   - Atacando Inference... ✅ (0.0s)
+
+📊 RESULTADOS EPSILON 1.0
+🔹 Singling Out    | Risco: 0.2689 | IC: (0.1840, 0.3537)
+🔹 Linkability     | Risco: 0.0185 | IC: (0.0000, 0.0370)
+🔹 Inference       | Risco: 0.3941 | IC: (0.3002, 0.4880)
+
+🚀 Analisando Epsilon 0.1...
+🕵️ Auditoria Turbo: 400 registros | 100 ataques.
+   - Atacando Singling Out... ✅ (4.7s)
+   - Atacando Linkability... ✅ (0.0s)
+   - Atacando Inference... ✅ (0.0s)
+
+📊 RESULTADOS EPSILON 0.1
+🔹 Singling Out    | Risco: 0.2689 | IC: (0.1840, 0.3537)
+🔹 Linkability     | Risco: 0.0185 | IC: (0.0000, 0.0370)
+🔹 Inference       | Risco: 0.5482 | IC: (0.4524, 0.6439)

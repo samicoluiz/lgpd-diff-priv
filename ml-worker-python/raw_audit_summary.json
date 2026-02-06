@@ -1,0 +1,19 @@
+{
+    "timestamp": "2026-02-01 17:14:36",
+    "linkability_risk": 0.007781672868929911,
+    "inference_avg_risk": 0.3604058238915917,
+    "details": {
+        "CD_COR_RACA": {
+            "risk": 0.3987776827270783,
+            "label": "\ud83d\udea8 ALTO"
+        },
+        "CD_GRAU_INSTRUCAO": {
+            "risk": 0.26182984171077256,
+            "label": "\ud83d\udea8 ALTO"
+        },
+        "CD_ESTADO_CIVIL": {
+            "risk": 0.4206099472369242,
+            "label": "\ud83d\udea8 ALTO"
+        }
+    }
+}

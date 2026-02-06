@@ -1,0 +1,35 @@
+Início: Fri Feb  6 12:34:42 -03 2026
+🚀 Preparação de Alta Fidelidade...
+✅ Pronto! Colunas finais: ['CD_CARGO', 'SG_PARTIDO', 'DS_GRAU_INSTRUCAO', 'DS_SIT_TOT_TURNO', 'COMPETICAO', 'TEM_TITULO']
+[2026-02-06T12:34:48.463299-0300][3492][CRITICAL] Error importing TabularGoggle: No module named 'dgl'
+[2026-02-06T12:34:48.465483-0300][3492][CRITICAL] module disabled: /home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py
+[2026-02-06T12:35:39.588887-0300][3492][CRITICAL] module disabled: /home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py
+[2026-02-06T12:36:16.250421-0300][3492][CRITICAL] module disabled: /home/samico/tcc_linux/venv/lib/python3.10/site-packages/synthcity/plugins/generic/plugin_goggle.py
+🧬 Iniciando Experimento de Trade-off (Privacidade vs. Utilidade)
+============================================================
+📊 Base de treino carregada: 23103 registos.
+
+🚀 A processar Epsilon 10.0...
+✅ Concluído: df_syn_eps_10.0.parquet gerado em 0.86 minutos.
+
+🚀 A processar Epsilon 1.0...
+✅ Concluído: df_syn_eps_1.0.parquet gerado em 0.61 minutos.
+
+🚀 A processar Epsilon 0.1...
+✅ Concluído: df_syn_eps_0.1.parquet gerado em 0.63 minutos.
+
+============================================================
+✨ Processo concluído. Todos os cenários estão prontos para avaliação.
+👉 Próximo passo sugerido: python3 03_utility_evaluator.py
+
+========================================
+      Cenário       F1      ACC
+    Original 0.635325 0.649931
+Epsilon 10.0 0.298934 0.468317
+ Epsilon 1.0 0.305769 0.468144
+ Epsilon 0.1 0.298552 0.468144 
+========================================
+
+🚀 Analisando Epsilon 10.0...
+🕵️ Auditoria: Amostra de 1500 registros | 500 ataques.
+   - Atacando Singling Out... 

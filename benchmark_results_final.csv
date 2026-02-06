@@ -1,0 +1,7 @@
+Cenário;Epsilon;Utility_JSD;Inference_Risk;Status
+High-Fidelity + AIM;1.0;0.5532;0.1566;Vulnerável
+Wrangling Only;N/A;0.2861;0.0;Moderado
+Intensive + AIM;0.1;0.5441;0.1408;Moderado
+Intensive + AIM;1.0;0.5441;0.1884;Vulnerável
+Intensive + AIM;10.0;0.5444;0.1388;Moderado
+Intensive + AIM;100.0;0.5532;0.1547;Vulnerável
