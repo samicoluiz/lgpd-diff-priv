@@ -1,38 +1,31 @@
 import pandas as pd
-import warnings
+import glob, re, warnings
 from anonymeter.evaluators import InferenceEvaluator
 
 warnings.filterwarnings("ignore")
 
 if __name__ == "__main__":
-    # O atacante agora conhece quase tudo (Alta Exposição)
     QIDS = ['SG_PARTIDO', 'DS_GENERO', 'DS_COR_RACA', 'DS_ESTADO_CIVIL', 'SG_UF']
     SECRET = 'DS_GRAU_INSTRUCAO'
     
-    print(f"\n🕵️ [AUDITORIA TSTR] Segredo: {SECRET}")
     df_real = pd.read_parquet("df_real_train.parquet").astype(str)
     
-    results = []
+    files = glob.glob("df_syn_eps_*.parquet")
+    eps_files = sorted([(float(re.findall(r"eps_(.*)\.parquet", f)[0]), f) for f in files], key=lambda x: x[0], reverse=True)
 
-    for eps in [10.0, 1.0, 0.1]:
+    print("\n" + "="*60)
+    print(f"{'Epsilon':>10} | {'Risco':>12} | {'IC 95%':>25}")
+    print("-" * 60)
+
+    for eps, fname in eps_files:
         try:
-            print(f"🚀 Atacando Sintético Epsilon {eps}...")
-            df_syn = pd.read_parquet(f"df_syn_eps_{eps}.parquet").astype(str)
-            
-            # O ataque é feito no sintético, mas validado contra o real
-            eval_inf = InferenceEvaluator(
-                ori=df_real, 
-                syn=df_syn, 
-                aux_cols=QIDS, 
-                secret=SECRET, 
-                n_attacks=500
-            )
+            df_syn = pd.read_parquet(fname).astype(str)
+            # Aumentamos para 1000 ataques para estabilizar o IC
+            eval_inf = InferenceEvaluator(ori=df_real, syn=df_syn, aux_cols=QIDS, secret=SECRET, n_attacks=1000)
             eval_inf.evaluate()
             risk = eval_inf.risk()
-            
-            print(f"   📊 Risco de Inferência: {risk.value:.4f} (IC: {risk.ci[0]:.4f} - {risk.ci[1]:.4f})")
-            results.append({'Epsilon': eps, 'Risco': risk.value})
+            ic = f"({risk.ci[0]:.3f} - {risk.ci[1]:.3f})"
+            print(f"{eps:10.3f} | {risk.value:12.4f} | {ic:>25}")
         except Exception as e:
-            print(f"⚠️ Erro no ataque Eps {eps}: {e}")
-
-    pd.DataFrame(results).to_csv("audit_privacidade_final.csv", index=False)
+            print(f"⚠️ Erro no Epsilon {eps}: {e}")
+    print("="*60)

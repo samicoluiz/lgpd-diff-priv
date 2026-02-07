@@ -1,21 +1,27 @@
 import pandas as pd
+import glob, re, warnings
 from xgboost import XGBClassifier
 from sklearn.metrics import f1_score
 from sklearn.preprocessing import LabelEncoder
 
-def train_and_test(df_train, df_test, do_wrangling=False):
-    df_tr, df_ts = df_train.copy(), df_test.copy()
-    
-    if do_wrangling:
-        # Exemplo de wrangling: agrupar ocupações e simplificar instrução
-        top_jobs = df_tr['DS_OCUPACAO'].value_counts().nlargest(10).index
-        df_tr['DS_OCUPACAO'] = df_tr['DS_OCUPACAO'].apply(lambda x: x if x in top_jobs else 'OUTROS')
-        df_ts['DS_OCUPACAO'] = df_ts['DS_OCUPACAO'].apply(lambda x: x if x in top_jobs else 'OUTROS')
+warnings.filterwarnings("ignore")
+
+def apply_wrangling(df):
+    """Tratamento manual para tentar recuperar utilidade (Wrangling)"""
+    df_w = df.copy()
+    # Agrupamento Top 15 (Equilíbrio entre sinal e ruído)
+    for col in ['DS_OCUPACAO', 'SG_PARTIDO']:
+        top_n = df_w[col].value_counts().nlargest(15).index
+        df_w[col] = df_w[col].apply(lambda x: x if x in top_n else 'OUTROS')
+    return df_w
+
+def run_model(df_train, df_test, wrangle=False):
+    df_tr = apply_wrangling(df_train) if wrangle else df_train.copy()
+    df_ts = df_test.copy() 
 
     X_train, y_train = df_tr.drop(columns=['ALVO']), df_tr['ALVO']
     X_test, y_test = df_ts.drop(columns=['ALVO']), df_ts['ALVO']
 
-    # Label Encoding (Sincronizado)
     for col in X_train.columns:
         le = LabelEncoder()
         le.fit(pd.concat([X_train[col], X_test[col]]).astype(str))
@@ -28,21 +34,26 @@ def train_and_test(df_train, df_test, do_wrangling=False):
 
 if __name__ == "__main__":
     real_train = pd.read_parquet("df_real_train.parquet")
-    real_test = pd.read_parquet("df_real_test.parquet") # O Gabarito
+    real_test = pd.read_parquet("df_real_test.parquet")
 
-    print("\n🏁 INICIANDO BENCHMARK DE METODOLOGIA")
-    
-    # 1. Baseline: Real -> Real
-    f1_base = train_and_test(real_train, real_test, do_wrangling=False)
-    f1_base_wr = train_and_test(real_train, real_test, do_wrangling=True)
-    
-    print(f"🟢 Real Puro: {f1_base:.4f} | Real + Wrangling: {f1_base_wr:.4f}")
+    # Baselines Reais
+    f1_real_puro = run_model(real_train, real_test, wrangle=False)
+    f1_real_wrang = run_model(real_train, real_test, wrangle=True)
 
-    for eps in [10.0, 1.0, 0.1]:
-        try:
-            syn_train = pd.read_parquet(f"df_syn_eps_{eps}.parquet")
-            f1_syn = train_and_test(syn_train, real_test, do_wrangling=False)
-            f1_syn_wr = train_and_test(syn_train, real_test, do_wrangling=True)
-            
-            print(f"🚀 EPS {eps} | Syn Puro: {f1_syn:.4f} | Syn + Wrangling: {f1_syn_wr:.4f}")
-        except: continue
+    print("\n" + "="*75)
+    print(f"{'Epsilon':>10} | {'F1 (Puro)':>12} | {'F1 (Wrangled)':>15} | {'Retenção %':>12}")
+    print("-" * 75)
+    print(f"{'REAL':>10} | {f1_real_puro:12.4f} | {f1_real_wrang:15.4f} | {'100.00%':>12}")
+    print("-" * 75)
+
+    files = glob.glob("df_syn_eps_*.parquet")
+    eps_files = sorted([(float(re.findall(r"eps_(.*)\.parquet", f)[0]), f) for f in files], key=lambda x: x[0], reverse=True)
+
+    for eps, fname in eps_files:
+        syn_train = pd.read_parquet(fname)
+        f1_p = run_model(syn_train, real_test, wrangle=False)
+        f1_w = run_model(syn_train, real_test, wrangle=True)
+        # Retenção baseada no Real Wrangled
+        ret = (f1_w / f1_real_wrang) * 100
+        print(f"{eps:10.3f} | {f1_p:12.4f} | {f1_w:15.4f} | {ret:11.2f}%")
+    print("="*75)

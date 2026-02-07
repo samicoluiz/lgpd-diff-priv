@@ -1,77 +1,56 @@
-import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import confusion_matrix
-from xgboost import XGBClassifier
-from sklearn.preprocessing import LabelEncoder
-import warnings
+import pandas as pd
+import numpy as np
 
-warnings.filterwarnings("ignore")
-
-def get_trained_model(df_train, target, params):
-    # Prepara dados para um treino rápido focado em extrair importância
-    d = df_train.copy()
-    d[target] = d[target].apply(lambda x: 1 if 'ELEITO' in str(x).upper() else 0)
-    y = d[target]
-    X = d.drop(columns=[target, 'SQ_CANDIDATO', 'NM_URNA_CANDIDATO', 'SG_UF_NASCIMENTO'], errors='ignore')
+def generate_final_plot():
+    # Dados extraídos do seu log final
+    epsilons = [50.0, 35.0, 20.0, 10.0, 1.0, 0.1, 0.001]
+    f1_puro = [0.5011, 0.4942, 0.5063, 0.4910, 0.4900, 0.4940, 0.5084]
+    f1_wrang = [0.5010, 0.4942, 0.5010, 0.5111, 0.4893, 0.5118, 0.4910]
+    priv_risk = [0.1613, 0.1563, 0.1284, 0.1394, 0.0995, 0.1135, 0.1055]
     
-    for col in X.select_dtypes(include=['object']).columns:
-        X[col] = LabelEncoder().fit_transform(X[col].astype(str))
-    
-    model = XGBClassifier(**params, random_state=42)
-    model.fit(X, y)
-    return model, X.columns
+    base_real_puro = 0.5966
+    base_real_wrang = 0.5759
 
-def export_to_latex_data(series, filename):
-    """
-    Converte uma Series do Pandas em um arquivo formatado para PGFPlots.
-    """
-    df_tex = series.reset_index()
-    df_tex.columns = ['attribute', 'importance']
-    # Remove caracteres especiais que o LaTeX não gosta em nomes de colunas
-    df_tex['attribute'] = df_tex['attribute'].str.replace('_', '\\_')
-    df_tex.to_csv(filename, sep=' ', index=False)
-    print(f"✅ Dados para LaTeX salvos em: {filename}")
+    x = np.arange(len(epsilons))
+    fig, ax1 = plt.subplots(figsize=(12, 7))
+
+    # --- EIXO 1: UTILIDADE ---
+    ax1.set_xlabel('Nível de Privacidade (Epsilon $\epsilon$)', fontweight='bold')
+    ax1.set_ylabel('Utilidade (F1-Score)', color='tab:blue', fontweight='bold')
+    
+    # Linhas de Baseline Real
+    ax1.axhline(y=base_real_puro, color='green', linestyle='--', alpha=0.6, label='Real Puro (Teto)')
+    ax1.axhline(y=base_real_wrang, color='darkgreen', linestyle=':', alpha=0.6, label='Real Wrangled')
+    
+    # Linhas de Utilidade Sintética
+    ax1.plot(x, f1_puro, marker='o', ls='-', color='skyblue', linewidth=2, label='Syn Puro')
+    ax1.plot(x, f1_wrang, marker='s', ls='--', color='tab:blue', linewidth=2, label='Syn Wrangled')
+    
+    ax1.set_ylim(0.40, 0.65)
+    ax1.tick_params(axis='y', labelcolor='tab:blue')
+
+    # --- EIXO 2: PRIVACIDADE ---
+    ax2 = ax1.twinx()
+    ax2.set_ylabel('Risco de Inferência (Anonymeter)', color='tab:red', fontweight='bold')
+    ax2.plot(x, priv_risk, marker='D', ls='-', color='tab:red', linewidth=3, markersize=8, label='Risco de Privacidade')
+    
+    ax2.set_ylim(0, 0.30)
+    ax2.tick_params(axis='y', labelcolor='tab:red')
+
+    # --- AJUSTES FINAIS ---
+    plt.title('Metodologia Samico: Avaliação de Utilidade vs. Privacidade\n(TSE 2024 - Algoritmo AIM)', fontsize=14, pad=20)
+    plt.xticks(x, [str(e) for e in epsilons])
+    
+    # Unificar Legenda
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3)
+
+    plt.grid(alpha=0.2)
+    fig.tight_layout()
+    plt.savefig('tradeoff_metodologia_samico.png', dpi=300, bbox_inches='tight')
+    print("🚀 Gráfico 'tradeoff_metodologia_samico.png' gerado com sucesso!")
 
 if __name__ == "__main__":
-    TARGET = 'DS_SIT_TOT_TURNO'
-    # Parâmetros que o Grid Search encontrou no passo 03 (ajuste conforme seu resultado)
-    params = {'learning_rate': 0.1, 'max_depth': 4, 'n_estimators': 200}
-    
-    df_real = pd.read_parquet("df_real_train.parquet")
-    epsilons = [0.1, 1.0, 10.0]
-    
-    print("🎨 Gerando visualizações para o TCC...")
-
-    # --- 1. COMPARATIVO DE IMPORTÂNCIA DE ATRIBUTOS ---
-    plt.figure(figsize=(12, 8))
-    
-    # Modelo Real
-    model_r, cols = get_trained_model(df_real, TARGET, params)
-    feat_imp_r = pd.Series(model_r.feature_importances_, index=cols).sort_values(ascending=False).head(10)
-    
-    plt.subplot(2, 1, 1)
-    sns.barplot(x=feat_imp_r.values, y=feat_imp_r.index, palette='Blues_r')
-    plt.title("Top 10 Atributos Mais Importantes (Dado Real)")
-
-    # Modelo Sintético (Epsilon 10.0)
-    df_syn = pd.read_parquet("df_syn_eps_10.0.parquet")
-    model_s, cols = get_trained_model(df_syn, TARGET, params)
-    feat_imp_s = pd.Series(model_s.feature_importances_, index=cols).sort_values(ascending=False).head(10)
-
-    export_to_latex_data(feat_imp_r, "feat_imp_real.dat")
-    export_to_latex_data(feat_imp_s, "feat_imp_syn.dat")
-
-    plt.subplot(2, 1, 2)
-    sns.barplot(x=feat_imp_s.values, y=feat_imp_s.index, palette='Reds_r')
-    plt.title("Top 10 Atributos Mais Importantes (Sintético Epsilon 10.0)")
-    
-    plt.tight_layout()
-    plt.savefig("feature_importance_comparison.png")
-    print("✅ Gráfico de importância de atributos salvo.")
-
-    # --- 2. MATRIZ DE CONFUSÃO (Real vs Melhor Sintético) ---
-    # Para este passo, precisaríamos do df_real_test também
-    # [Lógica omitida para brevidade, mas segue o mesmo padrão de treino/predição]
-    
-    print("🚀 Processo concluído. Verifique os arquivos .png na pasta.")
+    generate_final_plot()
